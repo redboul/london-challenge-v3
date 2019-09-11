@@ -1,0 +1,23 @@
+<div class="foreverChallenges">
+  <h2>All week long challenges</h2>
+  <div class="week-progressBar">
+    <mat-progress-bar mode="determinate" [value]="fulfilledChallengesPercentage()"></mat-progress-bar>
+    <div class="week-progressBar-status">
+      {{fulfilledForeverChallenges?.length}}/{{challenges?.length}}
+    </div>
+  </div>
+  <div class="week-challenges">
+    <div class="week-challenges-category" *ngFor="let categoryAndChallenges of challengesByCategory">
+      <mat-accordion>
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <div class="week-challenges-categoryLabel">{{categoryAndChallenges[0]}}</div>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <app-challenge [challenge]="challenge" *ngFor="let challenge of categoryAndChallenges[1]" (click)="goToChallenge(challenge)"></app-challenge>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+</div>

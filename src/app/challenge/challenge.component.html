@@ -1,0 +1,8 @@
+<div class="challenge" [class.fulfilled]="isChallengeFulfilled()">
+  <div class="challenge-title">{{challenge.label}}</div>
+  <div class="challenge-detailsAction">
+    <mat-icon *ngIf="!isChallengeFulfilled()">keyboard_arrow_right
+    </mat-icon>
+    <mat-icon *ngIf="isChallengeFulfilled()">check</mat-icon>
+  </div>
+</div>

@@ -1,0 +1,82 @@
+.challenge .mat-divider {
+  margin: 10px 0;
+}
+
+.challenge-title {
+  margin: 20px 0 0;
+  font-size: 1.5rem;
+}
+
+.challenge-day {
+  font-style: italic;
+  text-align: right;
+  font-size: 1.2rem;
+}
+.challenge-description {
+  text-align: justify;
+  margin: 10px 0;
+  font-size: 1.1rem;
+}
+.challenge-image {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.challenge-image img {
+  max-width: 80%;
+  max-height: 300px;
+}
+
+.challenge-media-answer {
+  min-height: 140px;
+}
+
+.challenge-media-answersLabel,
+.challenge-text-answersLabel {
+  margin: 10px;
+}
+
+.challenge-text-answer {
+  position: relative;
+  min-height: 170px;
+  background-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2),
+    0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
+}
+.textAnswer-content {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: calc(100% - 65px);
+}
+.textAnswer-content p {
+  padding: 10px;
+  margin: 0;
+  word-break: break-word;
+  text-align: justify;
+}
+
+.challenge-text-form .mat-form-field {
+  display: block;
+  margin: 20px 0;
+}
+
+.challenge-text-submitButton {
+  margin: 20px 0;
+  text-align: right;
+}
+
+.challenge-media-form {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.challenge-media-form .mat-raised-button {
+  font-size: 1.2rem;
+  line-height: 3rem;
+}
+
+.challenge-media-error {
+  color: red;
+  font-weight: bold;
+}

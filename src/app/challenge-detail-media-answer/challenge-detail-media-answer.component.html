@@ -1,0 +1,16 @@
+<div class="challengeMediaAnswer">
+  <div class="challengeMediaAnswer-loader" *ngIf="!data">
+    <mat-spinner [diameter]="30" color="primary"></mat-spinner>
+  </div>
+  <div *ngIf="!!data" class="challengeMediaAnswer-content">
+    <div class="challengeMediaAnswer-content-Media">
+      <div class="challengeMediaAnswer-content-name">{{data?.name}} ({{getFileSizeInKo() }}Ko)</div>
+    </div>
+    <div class="challengeMediaAnswer-content-actions">
+      <a [href]="getDownloadUrl()" download="{{data?.name}}" mat-fab color="primary">
+        <mat-icon>file_download</mat-icon>
+      </a>
+      <app-delete-answer [hidden]="!data" (delete)="confirmDelete()"></app-delete-answer>
+    </div>
+  </div>
+</div>

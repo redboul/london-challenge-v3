@@ -1,0 +1,3 @@
+<div class="dashboard" *ngIf="users">
+  <app-team-status *ngFor="let user of users" [teamUser]="user"></app-team-status>
+</div>

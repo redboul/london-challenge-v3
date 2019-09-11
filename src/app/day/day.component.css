@@ -1,0 +1,37 @@
+.day-name {
+  font-size: 1.5em;
+  margin: 20px;
+}
+
+:host .mat-expansion-panel .mat-expansion-panel-header {
+  font-size: 1.2rem;
+  text-align: center;
+  background-color: white;
+}
+:host .mat-expansion-panel.mat-expanded .mat-expansion-panel-header {
+  background-color: #aaf;
+}
+::ng-deep .mat-expansion-panel-content .mat-expansion-panel-body {
+  padding: 0;
+}
+
+.day-progressBar {
+  margin: 20px;
+}
+
+.day-progressBar-status {
+  width: 100%;
+  text-align: right;
+  margin-top: 10px;
+  font-size: 1.2em;
+}
+
+.day-otherDays {
+  display: flex;
+  justify-content: center;
+}
+
+.day-otherDays .mat-form-field {
+  margin: 20px 20px;
+  flex-grow: 1;
+}
