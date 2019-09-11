@@ -1,23 +1,24 @@
 import { Injectable } from '@angular/core';
 
-import { AngularFirestore } from 'angularfire2/firestore';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { BehaviorSubject } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { UserService } from './user.service';
-import { QuerySnapshot, Query } from 'firebase/firestore';
+import { QuerySnapshot, Query } from '@angular/fire/firestore';
 import { FulFilledChallenge } from './fulfilled-challenge';
 import { User } from './user';
 
 @Injectable()
 export class FulfilledChallengesService {
   private users: User[];
-  private fulfilledChallenges: QuerySnapshot;
+  private fulfilledChallenges: QuerySnapshot<FulFilledChallenge>;
   private fulfilledChallengesRef: Query;
-  private fulfilledChallengesCollection;
+  private fulfilledChallengesCollection: AngularFirestoreCollection<FulFilledChallenge[]>;
   size$ = new BehaviorSubject(0);
   fulfilledChallenges$ = new BehaviorSubject<FulFilledChallenge[]>(null);
   constructor(private db: AngularFirestore, private userService: UserService) {
-    userService.currentUser$
-      .filter(u => !!u)
+    userService.currentUser$.pipe(
+      filter(u => !!u))
       .subscribe(u => this.retrieveFulFilledChallenges(u));
   }
 
@@ -37,7 +38,7 @@ export class FulfilledChallengesService {
   updateFulfilledChallenges() {
     this.fulfilledChallengesRef
       .get()
-      .then((fulfilledChallenges: FulFilledChallenge[]) => {
+      .then((fulfilledChallenges: QuerySnapshot<FulFilledChallenge>) => {
         this.fulfilledChallenges = fulfilledChallenges;
         const ffcs = this.fulfilledChallenges.docs
           .map(doc => ({

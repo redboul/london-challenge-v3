@@ -2,20 +2,21 @@ import { Day } from './day';
 import { Injectable } from '@angular/core';
 import { User } from 'firebase/app';
 
-import { AngularFirestore } from 'angularfire2/firestore';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { BehaviorSubject } from 'rxjs';
+import { filter } from 'rxjs/operators';
+ 
 import { AuthenticationService } from './authentication.service';
-import { AppStatusService } from './app-status.service';
 
 @Injectable()
 export class DayService {
   days$ = new BehaviorSubject(null);
   constructor(
-    private authenticationService: AuthenticationService,
+    authenticationService: AuthenticationService,
     private db: AngularFirestore,
   ) {
-    authenticationService.authenticatedUser$
-      .filter(user => !!user)
+    authenticationService.authenticatedUser$.pipe(
+      filter(user => !!user))
       .subscribe(user => {
         this.retrieveDays(user);
       });

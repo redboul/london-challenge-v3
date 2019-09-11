@@ -1,6 +1,7 @@
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { UserService } from './../user.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { filter } from 'rxjs/operators';
 import { User } from '../user';
 @Component({
   selector: 'app-current-user',
@@ -14,7 +15,7 @@ export class CurrentUserComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentUserSubscription = this.userService.currentUser$
-      .filter(u => !!u)
+      .pipe(filter(u => !!u))
       .subscribe(u => (this.currentUser = u));
   }
   ngOnDestroy() {

@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { UserService } from './user.service';
 import { Injectable } from '@angular/core';
 import {
@@ -10,8 +10,7 @@ import {
 export class UserGuard implements CanActivateChild {
   constructor(private userService: UserService) {}
   canActivateChild(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot,
+    route: ActivatedRouteSnapshot
   ): boolean {
     return this.userService.isCurrentUserAuthorized(route.params.uuid);
   }

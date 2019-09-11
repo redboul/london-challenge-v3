@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { AngularFirestore } from '@angular/fire/firestore';
 import { BehaviorSubject } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { AuthenticationService } from './authentication.service';
 import { User as LondonChallengeUser, AccountType } from './user';
 
@@ -15,8 +16,8 @@ export class UserService {
     authenticationService: AuthenticationService,
     private db: AngularFirestore,
   ) {
-    authenticationService.authenticatedUser$
-      .filter(user => !!user)
+    authenticationService.authenticatedUser$.pipe(
+      filter(user => !!user))
       .subscribe(user => {
         this.retrieveUsersRights();
         this.retrieveUserRights(user.email).then(u => {

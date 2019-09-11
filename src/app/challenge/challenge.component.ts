@@ -2,6 +2,7 @@ import { FulfilledChallengesService } from './../fulfilled-challenges.service';
 import { FulFilledChallenge } from './../fulfilled-challenge';
 import { Input, Component, OnInit } from '@angular/core';
 import { Challenge, challengeType } from '../challenge';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-challenge',
@@ -16,7 +17,7 @@ export class ChallengeComponent implements OnInit {
 
   ngOnInit() {
     this.fulfilledChallengesService.fulfilledChallenges$
-      .filter(ffcs => !!ffcs)
+      .pipe(filter(ffcs => !!ffcs))
       .subscribe(
         ffcs =>
           (this.fulfilledChallenge = ffcs.find(

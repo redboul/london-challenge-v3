@@ -25,6 +25,7 @@
             "aot": false,
             "assets": [
               "src/assets",
+              "src/assets/images",
               "src/manifest.webmanifest"
             ],
             "styles": [

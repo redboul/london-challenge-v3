@@ -7,7 +7,8 @@ import { Day } from '../day';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Challenge } from '../challenge';
 import { FulFilledChallenge } from '../fulfilled-challenge';
-import { Subscription } from 'rxjs/Subscription';
+import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
@@ -37,13 +38,13 @@ export class CalendarComponent implements OnInit, OnDestroy {
       this.appStatusService.available();
     });
     this.route.paramMap.subscribe(map => (this.uuid = map.get('uuid')));
-    this.foreverChallengesSubscription = this.challengesService.foreverChallenges$
-      .filter(challenges => !!challenges)
+    this.foreverChallengesSubscription = this.challengesService.foreverChallenges$.pipe(
+      filter(challenges => !!challenges))
       .subscribe(challenges => {
         this.foreverChallenges = challenges;
       });
-    this.fulfilledForeverChallengesSubscription = this.fulfilledChallengesService.fulfilledChallenges$
-      .filter(challenges => !!challenges)
+    this.fulfilledForeverChallengesSubscription = this.fulfilledChallengesService.fulfilledChallenges$.pipe(
+      filter(challenges => !!challenges))
       .subscribe(ffcs => {
         this.fulfilledForeverChallenges = ffcs.filter(ffc => !ffc.day);
       });

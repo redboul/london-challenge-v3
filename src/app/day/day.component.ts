@@ -1,14 +1,15 @@
 import { DayService } from './../day.service';
 import { FulFilledChallenge } from './../fulfilled-challenge';
 import { Challenge } from './../challenge';
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Day } from '../day';
 import { ChallengesService } from '../challenges.service';
 import { FulfilledChallengesService } from '../fulfilled-challenges.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AppStatusService } from '../app-status.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { groupBy } from 'lodash';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-day',
@@ -45,20 +46,20 @@ export class DayComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.daySubscription = this.dayService.days$
-      .filter(days => !!days)
+      .pipe(filter(days => !!days))
       .subscribe(days => {
         this.dayList = days;
         this.updateCurrentDay();
       });
     this.challengesSubscription = this.challengesService.allChallenges$
-      .filter(challenges => !!challenges)
+      .pipe(filter(challenges => !!challenges))
       .subscribe(challenges => {
         this.allChallenges = challenges;
         this.updateCurrentChallenges();
         this.appStatusService.available();
       });
     this.ffcsSubscription = this.fulfilledChallengeService.fulfilledChallenges$
-      .filter(challenges => !!challenges)
+      .pipe(filter(challenges => !!challenges))
       .subscribe(ffChallenges => {
         this.allFulfilledChallenges = ffChallenges;
         this.updateFFChallenges();

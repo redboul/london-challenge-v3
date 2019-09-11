@@ -1,18 +1,18 @@
 import { AppStatusService } from "./../app-status.service";
-import { Observable } from "rxjs/Observable";
+import { Subscription } from "rxjs";
 import { ChallengeStorageService } from "./../challenge-storage.service";
 import { ChallengesService } from "./../challenges.service";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 
 import { FulfilledChallengesService } from "./../fulfilled-challenges.service";
 import { FulFilledChallenge } from "./../fulfilled-challenge";
-import { Input, Component, OnInit, ElementRef, OnDestroy } from "@angular/core";
+import { Component, OnInit, ElementRef, OnDestroy } from "@angular/core";
 import { Challenge, challengeType } from "../challenge";
-import { AngularFireUploadTask } from "angularfire2/storage";
-import { UploadTaskSnapshot } from "@firebase/storage-types";
+import { AngularFireUploadTask } from "@angular/fire/storage";
 import { take, pull } from "lodash";
-import "rxjs/add/observable/zip";
-import { Subscription } from "rxjs/Subscription";
+import { zip } from "rxjs";
+import { filter } from "rxjs/operators";
+import { UploadTaskSnapshot } from '@angular/fire/storage/interfaces';
 
 @Component({
   selector: "app-challenge-detail",
@@ -44,24 +44,24 @@ export class ChallengeDetailComponent implements OnInit, OnDestroy {
       (map: ParamMap) => (this.challengeId = map.get("challengeId"))
     );
     this.allChallengeSubscription = this.challengesService.allChallenges$
-      .filter(challenges => !!challenges)
+      .pipe(filter(challenges => !!challenges))
       .subscribe(
         challenges =>
           (this.challenge = challenges.find(c => c.id === this.challengeId))
       );
     this.ffChallengeSubscription = this.fulfilledChallengesService.fulfilledChallenges$
-      .filter(ffcs => !!ffcs)
+      .pipe(filter(ffcs => !!ffcs))
       .subscribe(
         ffcs =>
           (this.fulfilledChallenge = ffcs.find(
             ffc => ffc.id === this.challenge.id
           ))
       );
-    this.appStatusSubscription = Observable.zip(
-      this.challengesService.allChallenges$.filter(challenges => !!challenges),
-      this.fulfilledChallengesService.fulfilledChallenges$.filter(
+    this.appStatusSubscription = zip(
+      this.challengesService.allChallenges$.pipe(filter(challenges => !!challenges)),
+      this.fulfilledChallengesService.fulfilledChallenges$.pipe(filter(
         ffcs => !!ffcs
-      )
+      ))
     ).subscribe(() => this.appStatusService.available());
   }
   ngOnDestroy() {
@@ -136,7 +136,7 @@ export class ChallengeDetailComponent implements OnInit, OnDestroy {
       0
     );
   }
-  submitFileForAnswer(event) {
+  submitFileForAnswer(event: { target: { files: FileList } }) {
     this.uploading = true;
     const uploadTasks: AngularFireUploadTask[] = take(
       Array.from(event.target.files),

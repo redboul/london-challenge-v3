@@ -1,8 +1,7 @@
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../user.service';
-import { ChallengesService } from '../challenges.service';
-import { FulfilledChallengesService } from '../fulfilled-challenges.service';
 import { AppStatusService } from '../app-status.service';
 import { sortBy } from 'lodash';
 @Component({
@@ -19,8 +18,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.usersSubscription = this.userService.users$
-      .filter(users => !!users)
+    this.usersSubscription = this.userService.users$.pipe(
+      filter(users => !!users))
       .subscribe(users => {
         this.users = sortBy(users, 'teamName');
         this.appStatusService.available();

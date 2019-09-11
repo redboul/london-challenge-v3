@@ -1,4 +1,3 @@
-import { ChallengeStorageService } from './../challenge-storage.service';
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import {
   trigger,

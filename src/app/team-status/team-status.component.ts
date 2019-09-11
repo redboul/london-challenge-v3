@@ -1,10 +1,10 @@
 import { UserService } from './../user.service';
 import { User, AccountType } from './../user';
-import { AppStatusService } from './../app-status.service';
 import { FulfilledChallengesService } from './../fulfilled-challenges.service';
 import { ChallengesService } from './../challenges.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-team-status',
@@ -29,7 +29,7 @@ export class TeamStatusComponent implements OnInit, OnDestroy {
     );
     this.sizePromise.then(size => (this.fulfilledChallengesSize = size));
     this.challengeSizeSubscription = this.challengesService.allChallenges$
-      .filter(cs => !!cs)
+      .pipe(filter(cs => !!cs))
       .subscribe(cs => (this.challengesSize = cs.length));
   }
 

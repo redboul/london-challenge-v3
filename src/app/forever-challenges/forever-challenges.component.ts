@@ -1,5 +1,5 @@
 import { FulfilledChallengesService } from './../fulfilled-challenges.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ChallengesService } from '../challenges.service';
@@ -7,6 +7,7 @@ import { AppStatusService } from '../app-status.service';
 import { Challenge } from '../challenge';
 import { FulFilledChallenge } from '../fulfilled-challenge';
 import { groupBy } from 'lodash';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-forever-challenges',
@@ -29,7 +30,7 @@ export class ForeverChallengesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.foreverChallengesSubscription = this.challengesService.foreverChallenges$
-      .filter(challenges => !!challenges)
+      .pipe(filter(challenges => !!challenges))
       .subscribe(challenges => {
         this.challenges = challenges;
         this.challengesByCategory = Object.entries(
@@ -38,7 +39,7 @@ export class ForeverChallengesComponent implements OnInit, OnDestroy {
         this.appStatusService.available();
       });
     this.fulfilledForeverChallengesSubscription = this.fulfilledChallengesService.fulfilledChallenges$
-      .filter(challenges => !!challenges)
+      .pipe(filter(challenges => !!challenges))
       .subscribe(ffcs => {
         this.fulfilledForeverChallenges = ffcs.filter(ffc => !ffc.day);
       });

@@ -1,17 +1,11 @@
 import { UserService } from './user.service';
-import { AuthenticationService } from './authentication.service';
 import {
   AngularFireStorage,
   AngularFireUploadTask,
-} from 'angularfire2/storage';
+} from '@angular/fire/storage';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/interval';
-
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/first';
-import 'rxjs/add/operator/skip';
-import 'rxjs/add/operator/catch';
+import { of, interval, Observable } from 'rxjs';
+import { skip, first, catchError } from 'rxjs/operators';
 
 @Injectable()
 export class ChallengeStorageService {
@@ -34,10 +28,10 @@ export class ChallengeStorageService {
         this.storage.ref(filePath).getDownloadURL(),
       );
     }
-    return this.downloadUrlCache.get(filePath).catch(() => {
+    return this.downloadUrlCache.get(filePath).pipe(catchError(() => {
       console.log('impossible d\'uploader le fichier');
-      return Observable.interval(3000).skip(1).first();
-    });
+      return interval(3000).pipe(skip(1),first());
+    }));
   }
 
   deleteFile(filePath: string) {
@@ -50,9 +44,9 @@ export class ChallengeStorageService {
         this.storage.ref(filePath).getMetadata(),
       );
     }
-    return this.downloadMetadataCache.get(filePath).catch(() => {
+    return this.downloadMetadataCache.get(filePath).pipe(catchError(() => {
       console.log('impossible de récupérer les métadonnées du fichier');
-      return Observable.of('failure');
-    });;
+      return of('failure');
+    }));
   }
 }

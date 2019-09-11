@@ -1,38 +1,39 @@
 import { Injectable } from '@angular/core';
 import { User } from 'firebase/app';
 
-import { AngularFirestore } from 'angularfire2/firestore';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { BehaviorSubject } from 'rxjs';
 import { AuthenticationService } from './authentication.service';
-import { QuerySnapshot } from 'firebase/firestore';
-import { Subject } from 'rxjs/Subject';
+import { QuerySnapshot } from '@angular/fire/firestore';
+import { Subject } from 'rxjs';
 import { AppStatusService } from './app-status.service';
 import { Challenge } from './challenge';
+import { filter } from 'rxjs/operators';
 
 @Injectable()
 export class ChallengesService {
-  private challenges: QuerySnapshot;
+  private challenges: QuerySnapshot<Challenge>;
   public foreverChallenges$ = new BehaviorSubject<Challenge[]>(undefined);
   public allChallenges$ = new BehaviorSubject<Challenge[]>(undefined);
   public allChallenges: Challenge[] = [];
   constructor(
-    private authenticationService: AuthenticationService,
+    authenticationService: AuthenticationService,
     private db: AngularFirestore,
     private appStatusService: AppStatusService,
   ) {
-    authenticationService.authenticatedUser$
-      .filter(user => !!user)
-      .subscribe(user => {
-        this.retrieveChallenges(user);
+    authenticationService.authenticatedUser$.pipe(
+      filter(user => !!user))
+      .subscribe(() => {
+        this.retrieveChallenges();
       });
   }
 
-  retrieveChallenges(fUser: User) {
+  retrieveChallenges() {
     this.appStatusService.workInProgress();
     this.db
-      .collection('challenges')
+      .collection<Challenge>('challenges')
       .ref.get()
-      .then(challenges => {
+      .then((challenges: QuerySnapshot<Challenge>) => {
         this.challenges = challenges;
         this.allChallenges = challenges.docs.map(doc => ({
           id: doc.id,
