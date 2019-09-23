@@ -54,6 +54,9 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { TeamStatusComponent } from './team-status/team-status.component';
 import { CurrentUserComponent } from './current-user/current-user.component';
 import { ChallengeDescriptionComponent } from './challenge-description/challenge-description.component';
+import { StoreModule } from '@ngrx/store';
+import { reducers, metaReducers } from './reducers';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [
@@ -101,7 +104,15 @@ import { ChallengeDescriptionComponent } from './challenge-description/challenge
     AngularFireStorageModule,
     ServiceWorkerModule.register('/ngsw-worker.js', {
       enabled: environment.production,
-    })
+    }),
+    StoreModule.forRoot(reducers, {
+      metaReducers,
+      runtimeChecks: {
+        strictStateImmutability: true,
+        strictActionImmutability: true
+      }
+    }),
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production })
   ],
   providers: [
     AuthenticationService,
