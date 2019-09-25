@@ -1,3 +1,3 @@
-<div class="dashboard" *ngIf="users">
-  <app-team-status *ngFor="let user of users" [teamUser]="user"></app-team-status>
+<div class="dashboard" *ngIf="hasUsers$">
+  <app-team-status *ngFor="let user of users$ | async" [teamUser]="user"></app-team-status>
 </div>

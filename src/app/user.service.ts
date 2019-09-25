@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 
 import { AngularFirestore } from '@angular/fire/firestore';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthenticationService } from './authentication.service';
-import { User as LondonChallengeUser, AccountType } from './user';
+import { User as LondonChallengeUser, AccountType, User } from './user';
 
 @Injectable()
 export class UserService {
@@ -19,7 +19,7 @@ export class UserService {
     authenticationService.authenticatedUser$.pipe(
       filter(user => !!user))
       .subscribe(user => {
-        this.retrieveUsersRights();
+        this.getUsers();
         this.retrieveUserRights(user.email).then(u => {
           this.authenticatedUser = u;
           this.setCurrentUser(u);
@@ -48,14 +48,12 @@ export class UserService {
       );
   }
 
-  retrieveUsersRights() {
+  getUsers(): Promise<User[]> {
     const usersRef = this.db.collection('users').ref;
-    usersRef
+    return usersRef
       .get()
       .then(users =>
-        this.users$.next(
-          users.docs.map(user => ({ id: user.id, ...user.data() } as any)),
-        ),
+          users.docs.map(user => ({ id: user.id, ...user.data() } as any)), 
       );
   }
 }

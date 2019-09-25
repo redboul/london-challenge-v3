@@ -1,32 +1,30 @@
-import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UserService } from '../user.service';
-import { AppStatusService } from '../app-status.service';
-import { sortBy } from 'lodash';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { RootStoreState, UsersStoreSelectors, UsersStoreActions } from '../root-store';
+import { User } from '../user';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
-export class DashboardComponent implements OnInit, OnDestroy {
-  users;
-  usersSubscription: Subscription;
+export class DashboardComponent implements OnInit {
+  users$: Observable<User[]>;
+  hasUsers$: Observable<Boolean>;
   constructor(
-    private userService: UserService,
-    private appStatusService: AppStatusService,
+    private store$: Store<RootStoreState.State>
   ) {}
 
   ngOnInit() {
-    this.usersSubscription = this.userService.users$.pipe(
-      filter(users => !!users))
-      .subscribe(users => {
-        this.users = sortBy(users, 'teamName');
-        this.appStatusService.available();
-      });
-  }
-
-  ngOnDestroy() {
-    this.usersSubscription.unsubscribe();
+    this.users$ = this.store$.select(
+      UsersStoreSelectors.selectAllUsers
+    );
+    this.users$.pipe(tap(users => console.log(users))).subscribe();
+    this.hasUsers$ = this.store$.select(
+      UsersStoreSelectors.selectUsersHasAny
+    );
+    this.store$.dispatch(new UsersStoreActions.LoadUsersRequestAction());
   }
 }
