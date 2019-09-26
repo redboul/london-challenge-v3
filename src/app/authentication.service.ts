@@ -20,7 +20,7 @@ export class AuthenticationService {
     return this.afAuth.auth.currentUser && this.afAuth.auth.currentUser.uid;
   }
 
-  login(user: { email: string; password: string }): Promise<any> {
+  login(user: { email: string; password: string }): Promise<firebase.auth.UserCredential> {
     return this.afAuth.auth
       .signInWithEmailAndPassword(user.email, user.password);
   }
