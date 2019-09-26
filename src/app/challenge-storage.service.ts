@@ -6,6 +6,7 @@ import {
 import { Injectable } from '@angular/core';
 import { of, interval, Observable } from 'rxjs';
 import { skip, first, catchError } from 'rxjs/operators';
+import { User } from './user';
 
 @Injectable()
 export class ChallengeStorageService {
@@ -13,11 +14,10 @@ export class ChallengeStorageService {
   downloadMetadataCache = new Map<string, Observable<any>>();
   constructor(
     private storage: AngularFireStorage,
-    private userService: UserService,
   ) { }
-  addFile(file: File): AngularFireUploadTask {
+  addFile(currentTeam: User, file: File): AngularFireUploadTask {
     return this.storage.upload(
-      `users/${this.userService.currentUser.email}/${file.name}`,
+      `users/${currentTeam.email}/${file.name}`,
       file,
     );
   }

@@ -3,7 +3,8 @@ import { User } from '../../user';
 export interface State {
     isLoading?: boolean;
     error?: any;
-    user?: User
+    authenticatedUser?: User;
+    currentTeam?: User;
 }
 
 export const initialState: State = {

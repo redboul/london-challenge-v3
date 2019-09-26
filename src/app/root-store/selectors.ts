@@ -1,31 +1,14 @@
-import { createSelector, MemoizedSelector } from '@ngrx/store';
-import { UsersStoreSelectors } from './users-store';
-import { selectUsersHasAny } from './users-store/selectors';
+import { createSelector, MemoizedSelector } from "@ngrx/store";
+import { UsersStoreSelectors } from "./users-store";
+import { UserStoreSelectors } from "./user-store";
 
-
-export const selectError: MemoizedSelector<object, string> = createSelector(
-  UsersStoreSelectors.selectUsersError,
-  (usersError: string) => {
-    return usersError;
-  }
-);
-
-export const selectHasAnyUsers: MemoizedSelector<
-  object,
-  boolean
-> = createSelector(
-  UsersStoreSelectors.selectUsersHasAny,
-  (hasAny: boolean) => {
-    return hasAny;
-  }
-);
-
-export const selectUsersAreLoading: MemoizedSelector<
+export const selectAppIsLoading: MemoizedSelector<
   object,
   boolean
 > = createSelector(
   UsersStoreSelectors.selectUsersAreLoading,
-  (areLoading: boolean) => {
-    return areLoading;
+  UserStoreSelectors.selectUserIsLoading,
+  (usersAreLoading: boolean, userIsLoading: boolean) => {
+    return usersAreLoading || userIsLoading;
   }
 );

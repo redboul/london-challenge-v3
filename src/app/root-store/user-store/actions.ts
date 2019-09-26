@@ -6,7 +6,9 @@ export enum ActionTypes {
     LOAD_USER_RIGHTS_REQUEST = 'User Rights Load Request',
     LOAD_USER_FAILURE = 'User Load Failure',
     LOAD_USER_SUCCESS = 'User Load Success',
-    LOGIN_USER_SUCCESS = 'User Login Success'
+    LOGIN_USER_SUCCESS = 'User Login Success',
+    SET_CURRENT_TEAM = 'Set Current Team',
+    LOGOUT_USER = 'Logout User'
 }
 
 export class LoginUserRequestAction implements Action {
@@ -33,9 +35,20 @@ export class LoadUserSuccessAction implements Action {
     constructor(public payload: { user: User }) {}
 }
 
+export class SetCurrentTeamAction implements Action {
+    readonly type = ActionTypes.SET_CURRENT_TEAM;
+    constructor(public payload: { team: User }) {}
+}
+
+export class LogoutUserAction implements Action {
+    readonly type = ActionTypes.LOGOUT_USER;
+}
+
 export type Actions = 
     LoginUserRequestAction | 
     LoginUserSuccessAction |
     LoadUserRightsRequestAction |
     LoadUserFailureAction |
-    LoadUserSuccessAction;
+    LoadUserSuccessAction |
+    SetCurrentTeamAction |
+    LogoutUserAction;

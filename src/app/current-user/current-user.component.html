@@ -1,6 +1,6 @@
-<div class="currentUser" *ngIf="currentUser">
-  <div class="currentUser-logo" *ngIf="currentUser?.logo">
-    <img [src]="'/assets/images/'+currentUser.logo">
+<div class="currentUser" *ngIf="currentTeam$ | async">
+  <div class="currentUser-logo" *ngIf="logo$ | async">
+    <img [src]="logo$ | async">
   </div>
-  <div class="currentUser-teamName">{{currentUser?.teamName}}</div>
+  <div class="currentUser-teamName">{{(currentTeam$ | async)?.teamName}}</div>
 </div>

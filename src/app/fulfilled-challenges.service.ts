@@ -17,9 +17,10 @@ export class FulfilledChallengesService {
   size$ = new BehaviorSubject(0);
   fulfilledChallenges$ = new BehaviorSubject<FulFilledChallenge[]>(null);
   constructor(private db: AngularFirestore, private userService: UserService) {
-    userService.currentUser$.pipe(
+    // TODO
+    /* userService.currentUser$.pipe(
       filter(u => !!u))
-      .subscribe(u => this.retrieveFulFilledChallenges(u));
+      .subscribe(u => this.retrieveFulFilledChallenges(u)); */
   }
 
   retrieveFulFilledChallenges(user) {

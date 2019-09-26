@@ -142,9 +142,10 @@ export class ChallengeDetailComponent implements OnInit, OnDestroy {
       Array.from(event.target.files),
       (this.challenge.maxAnswers || 1) - this.getNumberOfAnswers()
     )
-      .filter(file => file.size < 20 * 1024 * 1024)
-      .map(file => this.challengeStorageService.addFile(file as File));
-    Promise.all(uploadTasks)
+    // TODO
+      .filter(file => file.size < 20 * 1024 * 1024) as any
+      //.map(file => this.challengeStorageService.addFile(file as File));
+    Promise.all(uploadTasks as AngularFireUploadTask[])
       .then((taskResponses: UploadTaskSnapshot[]) => {
         this.fulfilledChallengesService.submitFulfillChallenge({
           id: this.challenge.id,

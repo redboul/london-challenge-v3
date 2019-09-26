@@ -5,6 +5,9 @@ import { ChallengesService } from './../challenges.service';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { filter } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { RootStoreState } from '../root-store';
+import { UserStoreActions } from '../root-store/user-store';
 
 @Component({
   selector: 'app-team-status',
@@ -18,7 +21,7 @@ export class TeamStatusComponent implements OnInit, OnDestroy {
   challengeSizeSubscription: Subscription;
   sizePromise: Promise<number>;
   constructor(
-    private userService: UserService,
+    private store$: Store<RootStoreState.State>,
     private challengesService: ChallengesService,
     private fulfilledChallenges: FulfilledChallengesService,
   ) {}
@@ -40,8 +43,6 @@ export class TeamStatusComponent implements OnInit, OnDestroy {
     return this.fulfilledChallengesSize * 100 / this.challengesSize;
   }
   setCurrentUser() {
-    if (this.userService.authenticatedUser.accountType === AccountType.admin) {
-      this.userService.setCurrentUser(this.teamUser);
-    }
+    this.store$.dispatch(new UserStoreActions.SetCurrentTeamAction({ team: this.teamUser }));
   }
 }

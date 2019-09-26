@@ -1,17 +1,18 @@
-import { Observable } from 'rxjs';
-import { UserService } from './user.service';
 import { Injectable } from '@angular/core';
 import {
   CanActivateChild,
   ActivatedRouteSnapshot,
-  RouterStateSnapshot,
 } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { RootStoreState } from './root-store';
+import { Observable } from 'rxjs';
+import { UserStoreSelectors } from './root-store/user-store';
 @Injectable()
 export class UserGuard implements CanActivateChild {
-  constructor(private userService: UserService) {}
+  constructor(private store$: Store<RootStoreState.State>) {}
   canActivateChild(
     route: ActivatedRouteSnapshot
-  ): boolean {
-    return this.userService.isCurrentUserAuthorized(route.params.uuid);
+  ): Observable<boolean> {
+    return this.store$.select(UserStoreSelectors.selectIsAuthenticatedUserAuthorizedToAccessTeam);
   }
 }
