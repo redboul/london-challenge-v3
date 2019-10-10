@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AppStatusService } from '../app-status.service';
+import { Store } from '@ngrx/store';
+import { RootStoreState, RootStoreSelectors } from '../root-store';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-loading',
@@ -7,10 +9,14 @@ import { AppStatusService } from '../app-status.service';
   styleUrls: ['./loading.component.css']
 })
 export class LoadingComponent implements OnInit {
+  isAppLoading$: Observable<boolean>;
 
-  constructor(public appStatus: AppStatusService) { }
+  constructor(private store$: Store<RootStoreState.State>) { }
 
   ngOnInit() {
+    this.isAppLoading$ = this.store$.select(
+      RootStoreSelectors.selectAppIsLoading
+    );
   }
 
 }

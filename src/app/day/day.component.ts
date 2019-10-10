@@ -7,9 +7,12 @@ import { ChallengesService } from '../challenges.service';
 import { FulfilledChallengesService } from '../fulfilled-challenges.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AppStatusService } from '../app-status.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { groupBy } from 'lodash';
 import { filter } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { RootStoreState } from '../root-store';
+import { DaysStoreSelectors } from '../root-store/days-store';
 
 @Component({
   selector: 'app-day',
@@ -24,19 +27,18 @@ export class DayComponent implements OnInit, OnDestroy {
   allFulfilledChallenges: FulFilledChallenge[] = [];
   dayId: string;
   day: Day;
-  dayList: Day[] = [];
+  days$: Observable<Day[]>;
   paramsSubscription: Subscription;
   daySubscription: Subscription;
   ffcsSubscription: Subscription;
   challengesSubscription: Subscription;
   userUuid: string;
   constructor(
-    private appStatusService: AppStatusService,
-    private dayService: DayService,
     private challengesService: ChallengesService,
     private fulfilledChallengeService: FulfilledChallengesService,
     private route: ActivatedRoute,
     private router: Router,
+    private store$: Store<RootStoreState.State>,
   ) {
     this.paramsSubscription = this.route.params.subscribe(params => {
       this.dayId = params.day;
@@ -45,18 +47,14 @@ export class DayComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.daySubscription = this.dayService.days$
-      .pipe(filter(days => !!days))
-      .subscribe(days => {
-        this.dayList = days;
-        this.updateCurrentDay();
-      });
+    this.days$ = this.store$.select(
+      DaysStoreSelectors .selectAllDays
+    );
     this.challengesSubscription = this.challengesService.allChallenges$
       .pipe(filter(challenges => !!challenges))
       .subscribe(challenges => {
         this.allChallenges = challenges;
         this.updateCurrentChallenges();
-        this.appStatusService.available();
       });
     this.ffcsSubscription = this.fulfilledChallengeService.fulfilledChallenges$
       .pipe(filter(challenges => !!challenges))
@@ -71,11 +69,6 @@ export class DayComponent implements OnInit, OnDestroy {
       challenge => challenge.day === this.dayId,
     );
     this.challengesByCategory = Object.entries(groupBy(this.challenges, 'category'));
-    this.appStatusService.available();
-  }
-
-  updateCurrentDay() {
-    this.day = this.dayList.find(day => day.id === this.dayId);
   }
 
   updateFFChallenges() {
@@ -99,7 +92,6 @@ export class DayComponent implements OnInit, OnDestroy {
   }
   updateSelectedDay(selectedDay) {
     this.router.navigate([this.userUuid, 'calendar', selectedDay.value]);
-    this.updateCurrentDay();
     this.updateFFChallenges();
     this.updateCurrentChallenges();
   }

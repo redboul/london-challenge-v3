@@ -1,21 +1,23 @@
 import { ChallengesService } from './../challenges.service';
 import { FulfilledChallengesService } from './../fulfilled-challenges.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AppStatusService } from '../app-status.service';
-import { DayService } from '../day.service';
+import { Component, OnInit } from '@angular/core';
 import { Day } from '../day';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Challenge } from '../challenge';
 import { FulFilledChallenge } from '../fulfilled-challenge';
 import { filter } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { RootStoreState } from '../root-store';
+import { DaysStoreSelectors } from '../root-store/days-store';
+
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css'],
 })
-export class CalendarComponent implements OnInit, OnDestroy {
-  days: Day[];
+export class CalendarComponent implements OnInit {
+  days$: Observable<Day[]>;
   uuid: string;
   foreverChallenges: Challenge[] = [];
   fulfilledForeverChallenges: FulFilledChallenge[] = [];
@@ -23,20 +25,17 @@ export class CalendarComponent implements OnInit, OnDestroy {
   fulfilledForeverChallengesSubscription: Subscription;
 
   constructor(
-    private appStatusService: AppStatusService,
-    private dayService: DayService,
     private router: Router,
     private route: ActivatedRoute,
     private challengesService: ChallengesService,
     private fulfilledChallengesService: FulfilledChallengesService,
+    private store$: Store<RootStoreState.State>,
   ) {}
 
   ngOnInit() {
-    this.appStatusService.workInProgress();
-    this.dayService.days$.subscribe(days => {
-      this.days = days;
-      this.appStatusService.available();
-    });
+    this.days$ = this.store$.select(
+      DaysStoreSelectors.selectAllDays
+    );
     this.route.paramMap.subscribe(map => (this.uuid = map.get('uuid')));
     this.foreverChallengesSubscription = this.challengesService.foreverChallenges$.pipe(
       filter(challenges => !!challenges))
@@ -48,9 +47,6 @@ export class CalendarComponent implements OnInit, OnDestroy {
       .subscribe(ffcs => {
         this.fulfilledForeverChallenges = ffcs.filter(ffc => !ffc.day);
       });
-  }
-  ngOnDestroy() {
-    this.appStatusService.workInProgress();
   }
   goToPermanentChallenges() {
     this.router.navigate(['/', this.uuid, 'permanentChallenges'], {

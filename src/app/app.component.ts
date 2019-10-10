@@ -3,10 +3,10 @@ import { Router } from "@angular/router";
 import { Component, OnInit } from "@angular/core";
 import { AuthenticationService } from "./authentication.service";
 import { AppStatusService } from "./app-status.service";
-import { filter } from "rxjs/operators";
+import { filter, tap } from "rxjs/operators";
 import { Subscription, Observable } from "rxjs";
 import { User } from "./user";
-import { RootStoreState, RootStoreSelectors } from "./root-store";
+import { RootStoreState, RootStoreSelectors, UsersStoreActions } from "./root-store";
 import { Store } from "@ngrx/store";
 import { UserStoreSelectors, UserStoreActions } from "./root-store/user-store";
 import { selectUsersState } from "./root-store/user-store/selectors";
@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
     this.isAppLoading$ = this.store$.select(
       RootStoreSelectors.selectAppIsLoading
     );
+    this.store$.dispatch(new UsersStoreActions.LoadUsersRequestAction());
   }
   logout() {
     this.store$.dispatch(new UserStoreActions.LogoutUserAction());

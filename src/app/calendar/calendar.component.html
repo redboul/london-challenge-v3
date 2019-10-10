@@ -2,7 +2,7 @@
   <app-calendar-day *ngFor="let day of days;" [day]="day">
   </app-calendar-day>
 
-  <div class="week" *ngIf="!!days" (click)="goToPermanentChallenges()">
+  <div class="week" *ngIf="!!(days$ | async)" (click)="goToPermanentChallenges()">
     <div class="week-title">All week long Challenges</div>
     <div class="week-status" *ngIf="fulfilledForeverChallenges?.length !== foreverChallenges?.length">
       {{fulfilledForeverChallenges?.length}}/{{foreverChallenges?.length}}

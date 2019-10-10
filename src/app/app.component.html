@@ -10,7 +10,7 @@
   </mat-sidenav>
   <mat-sidenav-content>
     <app-loading></app-loading>
-    <div [hidden]="isAppWorking$ | async" class="appContent">
+    <div [hidden]="isAppLoading$ | async" class="appContent">
       <router-outlet></router-outlet>
       <app-current-user></app-current-user>
     </div>

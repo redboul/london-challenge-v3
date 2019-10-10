@@ -1,4 +1,4 @@
-<div *ngIf="appStatus.isWorking()" class="applicationLoader">
+<div *ngIf="isAppLoading$ | async" class="applicationLoader">
     <div class="applicationLoader-overlay"></div>
     <div class="applicationLoader-spinner">
         <div class="applicationLoader-spinner-centered">

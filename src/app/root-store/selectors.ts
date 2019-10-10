@@ -1,6 +1,7 @@
 import { createSelector, MemoizedSelector } from "@ngrx/store";
 import { UsersStoreSelectors } from "./users-store";
 import { UserStoreSelectors } from "./user-store";
+import { DaysStoreSelectors } from "./days-store";
 
 export const selectAppIsLoading: MemoizedSelector<
   object,
@@ -8,7 +9,8 @@ export const selectAppIsLoading: MemoizedSelector<
 > = createSelector(
   UsersStoreSelectors.selectUsersAreLoading,
   UserStoreSelectors.selectUserIsLoading,
-  (usersAreLoading: boolean, userIsLoading: boolean) => {
-    return usersAreLoading || userIsLoading;
+  DaysStoreSelectors.selectDaysAreLoading,
+  (usersAreLoading: boolean, userIsLoading: boolean, daysAreLoading: boolean) => {
+    return usersAreLoading || userIsLoading || daysAreLoading;
   }
 );

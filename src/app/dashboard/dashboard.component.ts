@@ -23,6 +23,5 @@ export class DashboardComponent implements OnInit {
     this.hasUsers$ = this.store$.select(
       UsersStoreSelectors.selectUsersHasAny
     );
-    this.store$.dispatch(new UsersStoreActions.LoadUsersRequestAction());
   }
 }

@@ -56,8 +56,6 @@ import { CurrentUserComponent } from './current-user/current-user.component';
 import { ChallengeDescriptionComponent } from './challenge-description/challenge-description.component';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { RootStoreModule } from './root-store';
-import { EffectsModule } from '@ngrx/effects';
-import { AppEffects } from './app.effects';
 
 @NgModule({
   declarations: [
@@ -107,8 +105,7 @@ import { AppEffects } from './app.effects';
       enabled: environment.production,
     }),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
-    RootStoreModule,
-    EffectsModule.forRoot([AppEffects])
+    RootStoreModule
   ],
   providers: [
     AuthenticationService,
