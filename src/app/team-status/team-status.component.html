@@ -4,7 +4,7 @@
   </div>
   <div class="teamStatus-progress">
     <div class="teamStatus-currentTeamName">{{teamUser?.teamName}}</div>
-    <mat-progress-bar mode="determinate" [value]="getProgress()"></mat-progress-bar>
-    <div class="teamStatus-currentProgress">{{fulfilledChallengesSize}}/{{challengesSize}}</div>
+    <mat-progress-bar mode="determinate" [value]=""></mat-progress-bar>
+    <div class="teamStatus-currentProgress">{{(fulfilledChallengesSize$ | async)}}/{{(challengesSize$ | async)}}</div>
   </div>
 </div>

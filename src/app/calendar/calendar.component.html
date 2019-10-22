@@ -1,13 +1,13 @@
 <div class="calendar">
-  <app-calendar-day *ngFor="let day of days;" [day]="day">
+  <app-calendar-day *ngFor="let day of (days$ | async);" [day]="day">
   </app-calendar-day>
 
   <div class="week" *ngIf="!!(days$ | async)" (click)="goToPermanentChallenges()">
     <div class="week-title">All week long Challenges</div>
-    <div class="week-status" *ngIf="fulfilledForeverChallenges?.length !== foreverChallenges?.length">
-      {{fulfilledForeverChallenges?.length}}/{{foreverChallenges?.length}}
+    <div class="week-status" *ngIf="!(areForeverChallengesAllCompleted$ | async)">
+      {{fulfilledForeverChallengesSize$ | async}}/{{foreverChallengesSize$ | async}}
     </div>
-    <div class="week-status" *ngIf="fulfilledForeverChallenges?.length === foreverChallenges?.length">
+    <div class="week-status" *ngIf="areForeverChallengesAllCompleted$ | async">
       <mat-icon>stars</mat-icon>
     </div>
   </div>

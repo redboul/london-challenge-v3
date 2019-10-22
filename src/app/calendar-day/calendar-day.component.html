@@ -1,9 +1,9 @@
 <div class="calendarDay" (click)="goToDay()">
   <div class="calendarDay-name">{{day?.dayName}}</div>
-  <div class="calendarDay-status" *ngIf="!isDayAccomplished()">
-    {{fulfilledChallenges?.length}}/{{challenges?.length}}
+  <div class="calendarDay-status" *ngIf="!(isDayAccomplished$ | async)">
+    {{(fulfilledChallenges | async).length}}/{{challengesSize$ | async}}
   </div>
-  <div class="calendarDay-status" *ngIf="isDayAccomplished()">
+  <div class="calendarDay-status" *ngIf="(isDayAccomplished$ | async)">
     <mat-icon>stars</mat-icon>
   </div>
 </div>

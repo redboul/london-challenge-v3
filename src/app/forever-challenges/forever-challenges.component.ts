@@ -1,63 +1,48 @@
-import { FulfilledChallengesService } from './../fulfilled-challenges.service';
-import { Subscription } from 'rxjs';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ChallengesService } from '../challenges.service';
-import { AppStatusService } from '../app-status.service';
-import { Challenge } from '../challenge';
-import { FulFilledChallenge } from '../fulfilled-challenge';
-import { groupBy } from 'lodash';
-import { filter } from 'rxjs/operators';
+import { Observable } from "rxjs";
+import { Router, ActivatedRoute } from "@angular/router";
+import { Component, OnInit } from "@angular/core";
+import { Challenge } from "../challenge";
+import { FulfilledChallenge } from "../fulfilled-challenge";
+import { RootStoreState } from "../root-store";
+import { Store } from "@ngrx/store";
+import { ChallengesStoreSelectors } from "../root-store/challenges-store";
+import { FulfilledChallengesStoreSelectors } from "../root-store/fulfilled-challenges-store";
+import { selectFulfilledChallengesPercentageByDayId } from "../root-store/selectors";
 
 @Component({
-  selector: 'app-forever-challenges',
-  templateUrl: './forever-challenges.component.html',
-  styleUrls: ['./forever-challenges.component.css'],
+  selector: "app-forever-challenges",
+  templateUrl: "./forever-challenges.component.html",
+  styleUrls: ["./forever-challenges.component.css"]
 })
-export class ForeverChallengesComponent implements OnInit, OnDestroy {
-  challenges: Challenge[] = [];
-  challengesByCategory: any[][] = [];
-  fulfilledForeverChallenges: FulFilledChallenge[] = [];
-  foreverChallengesSubscription: Subscription;
-  fulfilledForeverChallengesSubscription: Subscription;
+export class ForeverChallengesComponent implements OnInit {
+  challenges$: Observable<Challenge[]>;
+  challengesByCategory$: Observable<any[][]>;
+  fulfilledForeverChallenges$: Observable<FulfilledChallenge[]>;
+  fulfilledForeverChallengesPercentage$: Observable<number>;
   constructor(
-    private challengesService: ChallengesService,
-    private fulfilledChallengesService: FulfilledChallengesService,
-    private appStatusService: AppStatusService,
     private router: Router,
     private route: ActivatedRoute,
+    private store$: Store<RootStoreState.State>
   ) {}
 
   ngOnInit() {
-    this.foreverChallengesSubscription = this.challengesService.foreverChallenges$
-      .pipe(filter(challenges => !!challenges))
-      .subscribe(challenges => {
-        this.challenges = challenges;
-        this.challengesByCategory = Object.entries(
-          groupBy(this.challenges, 'category'),
-        );
-        this.appStatusService.available();
-      });
-    this.fulfilledForeverChallengesSubscription = this.fulfilledChallengesService.fulfilledChallenges$
-      .pipe(filter(challenges => !!challenges))
-      .subscribe(ffcs => {
-        this.fulfilledForeverChallenges = ffcs.filter(ffc => !ffc.day);
-      });
+    this.challenges$ = this.store$.select(
+      ChallengesStoreSelectors.selectAllChallenges
+    );
+    this.challengesByCategory$ = this.store$.select(
+      ChallengesStoreSelectors.selectChallengeGroupedByCategory
+    );
+    this.fulfilledForeverChallenges$ = this.store$.select(
+      FulfilledChallengesStoreSelectors.selectFulfilledChallenges
+    );
+    this.fulfilledForeverChallengesPercentage$ = this.store$.select(
+      selectFulfilledChallengesPercentageByDayId
+    );
   }
 
-  ngOnDestroy() {
-    this.foreverChallengesSubscription.unsubscribe();
-    this.fulfilledForeverChallengesSubscription.unsubscribe();
-  }
   goToChallenge(challenge: Challenge) {
-    this.router.navigate(['..', 'challenge', challenge.id], {
-      relativeTo: this.route,
+    this.router.navigate(["..", "challenge", challenge.id], {
+      relativeTo: this.route
     });
-  }
-
-  fulfilledChallengesPercentage() {
-    return this.fulfilledForeverChallenges && this.challenges
-      ? this.fulfilledForeverChallenges.length * 100 / this.challenges.length
-      : 0;
   }
 }

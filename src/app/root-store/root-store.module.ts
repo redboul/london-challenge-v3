@@ -7,6 +7,8 @@ import { UserStoreModule } from './user-store/user-store.module';
 import { DaysStoreModule } from './days-store';
 import { RootStoreEffects } from './effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { ChallengesStoreModule } from './challenges-store';
+import { FulfilledChallengesStoreModule } from './fulfilled-challenges-store';
 
 @NgModule({
   declarations: [],
@@ -15,9 +17,12 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
     UsersStoreModule,
     UserStoreModule,
     DaysStoreModule,
+    ChallengesStoreModule,
+    FulfilledChallengesStoreModule,
     StoreModule.forRoot({}),
     EffectsModule.forRoot([RootStoreEffects]),
     StoreRouterConnectingModule.forRoot()
-  ]
+  ],
+  providers: [RootStoreEffects]
 })
 export class RootStoreModule { }

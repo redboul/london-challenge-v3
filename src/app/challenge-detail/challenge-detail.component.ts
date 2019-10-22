@@ -1,11 +1,10 @@
 import { AppStatusService } from "./../app-status.service";
-import { Subscription } from "rxjs";
+import { Subscription, Observable } from 'rxjs';
 import { ChallengeStorageService } from "./../challenge-storage.service";
 import { ChallengesService } from "./../challenges.service";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 
 import { FulfilledChallengesService } from "./../fulfilled-challenges.service";
-import { FulFilledChallenge } from "./../fulfilled-challenge";
 import { Component, OnInit, ElementRef, OnDestroy } from "@angular/core";
 import { Challenge, challengeType } from "../challenge";
 import { AngularFireUploadTask } from "@angular/fire/storage";
@@ -13,15 +12,20 @@ import { take, pull } from "lodash";
 import { zip } from "rxjs";
 import { filter } from "rxjs/operators";
 import { UploadTaskSnapshot } from '@angular/fire/storage/interfaces';
+import { Store } from '@ngrx/store';
+import { RootStoreState } from '../root-store';
+import { ChallengesStoreSelectors } from '../root-store/challenges-store';
+import { FulfilledChallengesStoreSelectors } from '../root-store/fulfilled-challenges-store';
+import { FulfilledChallenge } from '../fulfilled-challenge';
 
 @Component({
   selector: "app-challenge-detail",
   templateUrl: "./challenge-detail.component.html",
   styleUrls: ["./challenge-detail.component.css"]
 })
-export class ChallengeDetailComponent implements OnInit, OnDestroy {
-  challenge: Challenge;
-  fulfilledChallenge: FulFilledChallenge;
+export class ChallengeDetailComponent implements OnInit {
+  challenge$: Observable<Challenge>;
+  fulfilledChallenge$: Observable<FulfilledChallenge>;
   answerToSubmit: string;
   challengeId: string;
   appStatusSubscription: Subscription;
@@ -31,46 +35,19 @@ export class ChallengeDetailComponent implements OnInit, OnDestroy {
   uploading = false;
   errorMessage: string;
   constructor(
-    private fulfilledChallengesService: FulfilledChallengesService,
-    private challengesService: ChallengesService,
     private route: ActivatedRoute,
     private el: ElementRef,
-    private challengeStorageService: ChallengeStorageService,
-    private appStatusService: AppStatusService
+    private store$: Store<RootStoreState.State>
   ) {}
 
   ngOnInit() {
     this.routeSubscription = this.route.paramMap.subscribe(
       (map: ParamMap) => (this.challengeId = map.get("challengeId"))
     );
-    this.allChallengeSubscription = this.challengesService.allChallenges$
-      .pipe(filter(challenges => !!challenges))
-      .subscribe(
-        challenges =>
-          (this.challenge = challenges.find(c => c.id === this.challengeId))
-      );
-    this.ffChallengeSubscription = this.fulfilledChallengesService.fulfilledChallenges$
-      .pipe(filter(ffcs => !!ffcs))
-      .subscribe(
-        ffcs =>
-          (this.fulfilledChallenge = ffcs.find(
-            ffc => ffc.id === this.challenge.id
-          ))
-      );
-    this.appStatusSubscription = zip(
-      this.challengesService.allChallenges$.pipe(filter(challenges => !!challenges)),
-      this.fulfilledChallengesService.fulfilledChallenges$.pipe(filter(
-        ffcs => !!ffcs
-      ))
-    ).subscribe(() => this.appStatusService.available());
+    this.challenge$ = this.store$.select(ChallengesStoreSelectors.selectChallengeById(this.challengeId));
+    this.fulfilledChallenge$ = this.store$.select(FulfilledChallengesStoreSelectors.selectFulfilledChallengesByChallengeId(this.challengeId));
   }
-  ngOnDestroy() {
-    this.appStatusSubscription.unsubscribe();
-    this.routeSubscription.unsubscribe();
-    this.allChallengeSubscription.unsubscribe();
-    this.ffChallengeSubscription.unsubscribe();
-  }
-  isTextChallenge() {
+  /*isTextChallenge() {
     return this.challenge && this.challenge.type === challengeType.text;
   }
   isMediaChallenge() {
@@ -122,7 +99,7 @@ export class ChallengeDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  saveOrUpdateFulfilledChallenge(ffChallenge: FulFilledChallenge) {
+  saveOrUpdateFulfilledChallenge(ffChallenge: FulfilledChallenge) {
     this.fulfilledChallengesService.submitFulfillChallenge(ffChallenge);
   }
   openFileInput() {
@@ -163,5 +140,5 @@ export class ChallengeDetailComponent implements OnInit, OnDestroy {
           Please try later with a better connectivity.`;
       })
       .then(() => (this.uploading = false));
-  }
+  }*/
 }

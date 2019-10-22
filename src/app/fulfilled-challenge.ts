@@ -1,4 +1,4 @@
-export interface FulFilledChallenge {
+export interface FulfilledChallenge {
   id: string;
   type: number;
   day?: string;

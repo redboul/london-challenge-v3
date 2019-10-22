@@ -16,13 +16,13 @@ export const getCurrentDayId = (state: State): string => state.currentDayId;
 export const selectDaysState: MemoizedSelector<
   object,
   State
-> = createFeatureSelector<State>("Days");
+> = createFeatureSelector<State>("days");
 
 export const selectAllDays: (state: object) => Day[] = dayAdapter.getSelectors(
   selectDaysState
 ).selectAll;
 
-const selectCurrentDayId: MemoizedSelector<object, string> = createSelector(
+export const selectCurrentDayId: MemoizedSelector<object, string> = createSelector(
   selectDaysState,
   getCurrentDayId
 );
@@ -40,9 +40,9 @@ export const selectDaysAreLoading: MemoizedSelector<
   getIsLoading
 );
 
-export const selectCurrentDay = () =>
+export const selectCurrentDay: MemoizedSelector<object, Day> = 
   createSelector(
-    this.selectAllDays,
+    selectAllDays,
     selectCurrentDayId,
     (allDays: Day[], dayId: string) => {
       if (allDays) {
@@ -55,7 +55,7 @@ export const selectCurrentDay = () =>
 
 export const selectDayById = (id: string) =>
   createSelector(
-    this.selectAllDays,
+    selectAllDays,
     (allDays: Day[]) => {
       if (allDays) {
         return allDays.find(p => p.id === id);

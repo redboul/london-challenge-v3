@@ -1,8 +1,8 @@
-<div class="challenge" [class.fulfilled]="isChallengeFulfilled()">
+<div class="challenge" [class.fulfilled]="isChallengeFulfilled$ | async">
   <div class="challenge-title">{{challenge.label}}</div>
   <div class="challenge-detailsAction">
-    <mat-icon *ngIf="!isChallengeFulfilled()">keyboard_arrow_right
+    <mat-icon *ngIf="!(isChallengeFulfilled$ | async)">keyboard_arrow_right
     </mat-icon>
-    <mat-icon *ngIf="isChallengeFulfilled()">check</mat-icon>
+    <mat-icon *ngIf="isChallengeFulfilled$ | async">check</mat-icon>
   </div>
 </div>

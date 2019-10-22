@@ -1,53 +1,36 @@
-import { AppStatusService } from './../app-status.service';
-import { FulFilledChallenge } from './../fulfilled-challenge';
-import { Challenge } from './../challenge';
-import { Component, OnInit, Input } from '@angular/core';
-import { Day } from '../day';
-import { ChallengesService } from '../challenges.service';
-import { FulfilledChallengesService } from '../fulfilled-challenges.service';
+import { Component, OnInit, Input } from "@angular/core";
+import { Day } from "../day";
 import { Router, ActivatedRoute } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { RootStoreState } from "../root-store";
+import { Store } from "@ngrx/store";
+import { Observable } from "rxjs";
+import { selectNbFulfilledChallengeByDayId, selectNbChallengeByDayId, selectIsDaysChallengesAccomplished } from '../root-store/selectors';
 
 @Component({
-  selector: 'app-calendar-day',
-  templateUrl: './calendar-day.component.html',
-  styleUrls: ['./calendar-day.component.css'],
+  selector: "app-calendar-day",
+  templateUrl: "./calendar-day.component.html",
+  styleUrls: ["./calendar-day.component.css"]
 })
 export class CalendarDayComponent implements OnInit {
   @Input() day: Day;
-  challenges: Challenge[] = [];
-  fulfilledChallenges: FulFilledChallenge[] = [];
+  challengesSize$: Observable<number>;
+  fulfilledChallengesSize$: Observable<number>;
+  isDayAccomplished$: Observable<boolean>;
   constructor(
-    private appStatusService: AppStatusService,
-    private challengesService: ChallengesService,
-    private fulfilledChallengeService: FulfilledChallengesService,
     private router: Router,
     private route: ActivatedRoute,
+    private store$: Store<RootStoreState.State>
   ) {}
 
   ngOnInit() {
-    this.challengesService.allChallenges$.pipe(
-      filter(challenges => !!challenges))
-      .subscribe(challenges => {
-        this.challenges = challenges.filter(
-          challenge => challenge.day === this.day.id,
-        );
-        this.appStatusService.available();
-      });
-    this.fulfilledChallengeService.fulfilledChallenges$.pipe(
-      filter(challenges => !!challenges))
-      .subscribe(ffChallenges => {
-        this.fulfilledChallenges = ffChallenges.filter(
-          ffc => ffc.day === this.day.id,
-        );
-      });
-  }
-
-  isDayAccomplished() {
-    return (
-      this.fulfilledChallenges &&
-      this.challenges &&
-      this.fulfilledChallenges.length === this.challenges.length
+    this.challengesSize$ = this.store$.select(
+      selectNbChallengeByDayId
+    );
+    this.fulfilledChallengesSize$ = this.store$.select(
+      selectNbFulfilledChallengeByDayId
+    );
+    this.isDayAccomplished$ = this.store$.select(
+      selectIsDaysChallengesAccomplished
     );
   }
 

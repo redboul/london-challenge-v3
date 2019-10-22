@@ -1,98 +1,65 @@
-import { DayService } from './../day.service';
-import { FulFilledChallenge } from './../fulfilled-challenge';
-import { Challenge } from './../challenge';
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Day } from '../day';
-import { ChallengesService } from '../challenges.service';
-import { FulfilledChallengesService } from '../fulfilled-challenges.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { AppStatusService } from '../app-status.service';
-import { Subscription, Observable } from 'rxjs';
-import { groupBy } from 'lodash';
-import { filter } from 'rxjs/operators';
-import { Store } from '@ngrx/store';
-import { RootStoreState } from '../root-store';
-import { DaysStoreSelectors } from '../root-store/days-store';
+import { Challenge } from "./../challenge";
+import { Component, OnInit } from "@angular/core";
+import { Day } from "../day";
+
+import { Router } from "@angular/router";
+import { Observable } from "rxjs";
+import { Store } from "@ngrx/store";
+import { RootStoreState } from "../root-store";
+import { DaysStoreSelectors } from "../root-store/days-store";
+import { ChallengesStoreSelectors } from "../root-store/challenges-store";
+import { FulfilledChallenge } from "../fulfilled-challenge";
+import { FulfilledChallengesStoreSelectors } from "../root-store/fulfilled-challenges-store";
+import {
+  selectChallengeByDayId,
+  selectFulfilledChallengeByDayId,
+  selectFulfilledChallengesPercentageByDayId
+} from "../root-store/selectors";
 
 @Component({
-  selector: 'app-day',
-  templateUrl: './day.component.html',
-  styleUrls: ['./day.component.css'],
+  selector: "app-day",
+  templateUrl: "./day.component.html",
+  styleUrls: ["./day.component.css"]
 })
-export class DayComponent implements OnInit, OnDestroy {
-  challenges: Challenge[] = [];
-  challengesByCategory: any[][] = [];
-  allChallenges: Challenge[] = [];
-  fulfilledChallenges: FulFilledChallenge[] = [];
-  allFulfilledChallenges: FulFilledChallenge[] = [];
-  dayId: string;
-  day: Day;
+export class DayComponent implements OnInit {
+  challenges$: Observable<Challenge[]>;
+  challengesByCategory$: Observable<[string, Challenge[]][]>;
+  fulfilledChallenges$: Observable<FulfilledChallenge[]>;
+  allFulfilledChallenges$: Observable<FulfilledChallenge[]>;
+  fulfilledChallengesPercentage$: Observable<number>;
+  dayId$: Observable<string>;
+  day$: Observable<Day>;
   days$: Observable<Day[]>;
-  paramsSubscription: Subscription;
-  daySubscription: Subscription;
-  ffcsSubscription: Subscription;
-  challengesSubscription: Subscription;
-  userUuid: string;
   constructor(
-    private challengesService: ChallengesService,
-    private fulfilledChallengeService: FulfilledChallengesService,
-    private route: ActivatedRoute,
     private router: Router,
-    private store$: Store<RootStoreState.State>,
-  ) {
-    this.paramsSubscription = this.route.params.subscribe(params => {
-      this.dayId = params.day;
-      this.userUuid = params.uuid;
-    });
-  }
+    private store$: Store<RootStoreState.State>
+  ) {}
 
   ngOnInit() {
-    this.days$ = this.store$.select(
-      DaysStoreSelectors .selectAllDays
+    this.days$ = this.store$.select(DaysStoreSelectors.selectAllDays);
+    this.day$ = this.store$.select(DaysStoreSelectors.selectCurrentDay);
+    this.dayId$ = this.store$.select(DaysStoreSelectors.selectCurrentDayId);
+    this.challenges$ = this.store$.select(selectChallengeByDayId);
+    this.challengesByCategory$ = this.store$.select(
+      ChallengesStoreSelectors.selectChallengeGroupedByCategory
     );
-    this.challengesSubscription = this.challengesService.allChallenges$
-      .pipe(filter(challenges => !!challenges))
-      .subscribe(challenges => {
-        this.allChallenges = challenges;
-        this.updateCurrentChallenges();
-      });
-    this.ffcsSubscription = this.fulfilledChallengeService.fulfilledChallenges$
-      .pipe(filter(challenges => !!challenges))
-      .subscribe(ffChallenges => {
-        this.allFulfilledChallenges = ffChallenges;
-        this.updateFFChallenges();
-      });
+    this.allFulfilledChallenges$ = this.store$.select(
+      FulfilledChallengesStoreSelectors.selectFulfilledChallenges
+    );
+    this.fulfilledChallenges$ = this.store$.select(
+      selectFulfilledChallengeByDayId
+    );
+    this.fulfilledChallengesPercentage$ = this.store$.select(
+      selectFulfilledChallengesPercentageByDayId
+    );
   }
 
-  updateCurrentChallenges() {
-    this.challenges = this.allChallenges.filter(
-      challenge => challenge.day === this.dayId,
-    );
-    this.challengesByCategory = Object.entries(groupBy(this.challenges, 'category'));
-  }
-
-  updateFFChallenges() {
-    this.fulfilledChallenges = this.allFulfilledChallenges
-      .filter(ffc => ffc.day === this.dayId)
-      .filter(ffc => ffc.answers && ffc.answers.length);
-  }
-  ngOnDestroy() {
-    this.paramsSubscription.unsubscribe();
-    this.ffcsSubscription.unsubscribe();
-    this.daySubscription.unsubscribe();
-    this.challengesSubscription.unsubscribe();
-  }
-  fulfilledChallengesPercentage() {
-    return this.fulfilledChallenges && this.challenges
-      ? this.fulfilledChallenges.length * 100 / this.challenges.length
-      : 0;
-  }
   goToChallenge(challenge: Challenge) {
-    this.router.navigate([this.userUuid, 'challenge', challenge.id]);
+    // TODO
+    // this.router.navigate([this.userUuid, "challenge", challenge.id]);
   }
   updateSelectedDay(selectedDay) {
-    this.router.navigate([this.userUuid, 'calendar', selectedDay.value]);
-    this.updateFFChallenges();
-    this.updateCurrentChallenges();
+    // TODO
+    // this.router.navigate([this.userUuid, "calendar", selectedDay.value]);
   }
 }

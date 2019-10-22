@@ -1,56 +1,48 @@
-import { ChallengesService } from './../challenges.service';
-import { FulfilledChallengesService } from './../fulfilled-challenges.service';
-import { Component, OnInit } from '@angular/core';
-import { Day } from '../day';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Challenge } from '../challenge';
-import { FulFilledChallenge } from '../fulfilled-challenge';
-import { filter } from 'rxjs/operators';
-import { Subscription, Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { RootStoreState } from '../root-store';
-import { DaysStoreSelectors } from '../root-store/days-store';
+import { Component, OnInit } from "@angular/core";
+import { Day } from "../day";
+import { Router, ActivatedRoute } from "@angular/router";
+import { Observable } from "rxjs";
+import { Store } from "@ngrx/store";
+import { RootStoreState } from "../root-store";
+import { DaysStoreSelectors } from "../root-store/days-store";
+import { ChallengesStoreSelectors } from "../root-store/challenges-store";
+import { selectNbFulfilledForeverChallenges } from '../root-store/fulfilled-challenges-store/selectors';
+import { selectAreForeverChallengesAccomplished } from '../root-store/selectors';
 
 @Component({
-  selector: 'app-calendar',
-  templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.css'],
+  selector: "app-calendar",
+  templateUrl: "./calendar.component.html",
+  styleUrls: ["./calendar.component.css"]
 })
 export class CalendarComponent implements OnInit {
   days$: Observable<Day[]>;
   uuid: string;
-  foreverChallenges: Challenge[] = [];
-  fulfilledForeverChallenges: FulFilledChallenge[] = [];
-  foreverChallengesSubscription: Subscription;
-  fulfilledForeverChallengesSubscription: Subscription;
+  foreverChallengesSize$: Observable<number>;
+  fulfilledForeverChallengesSize$: Observable<number>;
+  areForeverChallengesAllCompleted$: Observable<boolean>;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private challengesService: ChallengesService,
-    private fulfilledChallengesService: FulfilledChallengesService,
-    private store$: Store<RootStoreState.State>,
+    private store$: Store<RootStoreState.State>
   ) {}
 
   ngOnInit() {
-    this.days$ = this.store$.select(
-      DaysStoreSelectors.selectAllDays
+    this.days$ = this.store$.select(DaysStoreSelectors.selectAllDays);
+    this.foreverChallengesSize$ = this.store$.select(
+      ChallengesStoreSelectors.selectNbForeverChallenges
     );
-    this.route.paramMap.subscribe(map => (this.uuid = map.get('uuid')));
-    this.foreverChallengesSubscription = this.challengesService.foreverChallenges$.pipe(
-      filter(challenges => !!challenges))
-      .subscribe(challenges => {
-        this.foreverChallenges = challenges;
-      });
-    this.fulfilledForeverChallengesSubscription = this.fulfilledChallengesService.fulfilledChallenges$.pipe(
-      filter(challenges => !!challenges))
-      .subscribe(ffcs => {
-        this.fulfilledForeverChallenges = ffcs.filter(ffc => !ffc.day);
-      });
+    this.fulfilledForeverChallengesSize$ = this.store$.select(
+      selectNbFulfilledForeverChallenges
+    );
+    this.areForeverChallengesAllCompleted$ = this.store$.select(
+      selectAreForeverChallengesAccomplished
+    );
   }
   goToPermanentChallenges() {
-    this.router.navigate(['/', this.uuid, 'permanentChallenges'], {
-      relativeTo: this.route,
+    //this.store$.dispatch()
+    this.router.navigate(["/", this.uuid, "permanentChallenges"], {
+      relativeTo: this.route
     });
   }
 }
